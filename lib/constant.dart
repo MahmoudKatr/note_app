@@ -1,0 +1,1 @@
+List<bool> isFavorite = [];
