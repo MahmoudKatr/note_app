@@ -72,7 +72,7 @@ class _AddNotesState extends State<AddNotes> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: _saveNote,
           backgroundColor: Colors.grey[200],
           child: const Icon(Icons.edit),
         ),

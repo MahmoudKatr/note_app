@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/add_notes.dart';
+import 'package:note_app/archives_item.dart';
 import 'package:note_app/custom_note_item.dart';
 import 'package:note_app/datatbase_helper.dart';
 import 'package:note_app/favorite_item.dart';
@@ -22,13 +23,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchNotes() async {
-    final data = await DBHelper.getDataFromDB();
-    print('Fetched data: $data'); // Debug log
-    setState(() {
-      notes = data ?? [];
-      isFavorite = List.generate(
-          notes.length, (index) => notes[index]['isFavorite'] == 1);
-    });
+    try {
+      final data = await DBHelper.getDataFromDB();
+      print('Fetched data: $data'); // Debug log
+      setState(() {
+        notes =
+            List<Map<String, dynamic>>.from(data ?? []); // Ensure mutability
+        isFavorite = List.generate(
+          notes.length,
+          (index) => notes[index]['isFavorite'] == 1,
+        );
+      });
+    } catch (e) {
+      print('Error fetching notes: $e');
+    }
   }
 
   @override
@@ -36,17 +44,26 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.book)),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ArchivesItemView()),
+            );
+          },
+          icon: const Icon(Icons.archive),
+        ),
         title: const Center(child: Text('All Notes')),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FavoriteItem()));
-              },
-              icon: const Icon(Icons.favorite)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoriteItem()),
+              );
+            },
+            icon: const Icon(Icons.favorite),
+          ),
         ],
       ),
       body: Container(
@@ -77,32 +94,120 @@ class _HomePageState extends State<HomePage> {
               child: ListView.builder(
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
-                  print('Building note item: ${notes[index]}'); // Debug log
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: NoteItem(
-                      index: index,
-                      note: notes[index],
-                      isFavorite: isFavorite,
-                      onFavoriteToggle: (bool isFav) {
-                        setState(() {
-                          isFavorite[index] = isFav;
-                          final updatedNotes =
-                              List<Map<String, dynamic>>.from(notes);
-                          updatedNotes[index] = {
-                            ...updatedNotes[index], // Copy the original map
-                            'isFavorite': isFav ? 1 : 0, // Update the field
-                          };
-                          notes = updatedNotes;
-                          DBHelper.updateFavoriteStatus(
-                              notes[index]['id'], isFav);
-                        });
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Dismissible(
+                      key: ValueKey(notes[index]['id']),
+                      background: Container(
+                        color: Colors.green,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          children: [
+                            Icon(Icons.archive, color: Colors.white),
+                            SizedBox(width: 10),
+                            Text(
+                              "Archive",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Delete",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(width: 10),
+                            Icon(Icons.delete, color: Colors.white),
+                          ],
+                        ),
+                      ),
+                      confirmDismiss: (direction) async {
+                        if (notes[index]['isFavorite'] == 1) {
+                          // Show a SnackBar and block dismissal for favorite notes
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "Favorite notes cannot be archived or deleted."),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                          return false; // Prevent dismissal
+                        }
+                        return true; // Allow dismissal for non-favorite notes
                       },
+                      onDismissed: (direction) {
+                        final dismissedNote = notes[index];
+
+                        setState(() {
+                          notes
+                              .removeAt(index); // Remove the item from the list
+                        });
+
+                        if (direction == DismissDirection.endToStart) {
+                          // Delete the note
+                          DBHelper.deleteNote(dismissedNote['id'])
+                              .catchError((error) {
+                            print("Error deleting note: $error");
+                            setState(() {
+                              notes.insert(index, dismissedNote);
+                            });
+                          });
+                        } else if (direction == DismissDirection.startToEnd) {
+                          // Archive the note
+                          DBHelper.updateNoteStatus(dismissedNote['id'], true)
+                              .catchError((error) {
+                            print("Error archiving note: $error");
+                            setState(() {
+                              notes.insert(index, dismissedNote);
+                            });
+                          });
+                        }
+                      },
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: NoteItem(
+                          index: index,
+                          note: notes[index],
+                          isFavorite: notes[index]['isFavorite'] ==
+                              1, // Check if the value is 1
+                          onFavoriteToggle: (bool isFav) async {
+                            setState(() {
+                              // Create a mutable copy of the note and update its 'isFavorite' value
+                              final updatedNote =
+                                  Map<String, dynamic>.from(notes[index]);
+                              updatedNote['isFavorite'] = isFav ? 1 : 0;
+
+                              // Replace the original note in the list with the updated note
+                              notes[index] = updatedNote;
+                            });
+
+                            // Update the favorite status in the database
+                            await DBHelper.updateFavoriteStatus(
+                              notes[index]['id'], // Pass the note ID
+                              isFav
+                                  ? 1
+                                  : 0, // Convert bool to int for the database
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -111,8 +216,10 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(vertical: 15),
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AddNotes()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddNotes()),
+            );
           },
           backgroundColor: Colors.grey[200],
           child: const Icon(Icons.add),

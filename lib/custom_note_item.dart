@@ -11,7 +11,7 @@ class NoteItem extends StatelessWidget {
 
   final int index;
   final Map<String, dynamic> note;
-  final List<bool> isFavorite;
+  final bool isFavorite; // Change from List<bool> to a single bool
   final void Function(bool) onFavoriteToggle;
 
   @override
@@ -31,9 +31,11 @@ class NoteItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // Align text to the left
               children: [
                 Text(
-                  note['title'],
+                  note['title'] ?? 'No Title',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -41,7 +43,7 @@ class NoteItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  note['note'],
+                  note['note'] ?? 'No Content',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Color.fromARGB(255, 134, 127, 127),
@@ -52,12 +54,15 @@ class NoteItem extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
-              isFavorite[index] ? Icons.favorite : Icons.favorite_border,
+              isFavorite
+                  ? Icons.favorite
+                  : Icons.favorite_border, // Use single bool
               size: 24,
-              color: Colors.red,
+              color:
+                  isFavorite ? Colors.red : Colors.grey, // Highlight favorite
             ),
             onPressed: () {
-              onFavoriteToggle(!isFavorite[index]);
+              onFavoriteToggle(!isFavorite); // Toggle favorite
             },
           ),
         ],
