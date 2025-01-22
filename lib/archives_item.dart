@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/home_page.dart';
 
 import 'datatbase_helper.dart';
 
@@ -33,6 +34,15 @@ class _ArchivesItemViewState extends State<ArchivesItemView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: const Text('Archived Notes'),
       ),
       body: Padding(
@@ -59,9 +69,21 @@ class _ArchivesItemViewState extends State<ArchivesItemView> {
                         ),
                       ),
                       subtitle: Text(note['note'] ?? 'No Content'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => deleteArchivedNote(index, note['id']),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon:
+                                const Icon(Icons.unarchive, color: Colors.blue),
+                            onPressed: () =>
+                                restoreArchivedNote(index, note['id']),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () =>
+                                deleteArchivedNote(index, note['id']),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -69,6 +91,24 @@ class _ArchivesItemViewState extends State<ArchivesItemView> {
               ),
       ),
     );
+  }
+
+  void restoreArchivedNote(int index, int noteId) async {
+    try {
+      await DBHelper.updateNoteStatus(
+          noteId, false); // Set `isArchived` to false
+      setState(() {
+        archivedNotes.removeAt(index); // Remove from archived list
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Note restored successfully')),
+      );
+    } catch (e) {
+      print('Error restoring note: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to restore note')),
+      );
+    }
   }
 
   void deleteArchivedNote(int index, int noteId) async {
