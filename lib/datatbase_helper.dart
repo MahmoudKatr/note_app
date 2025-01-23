@@ -133,4 +133,36 @@ class DBHelper {
       return [];
     }
   }
+
+  static Future<Map<String, dynamic>?> getNoteById(int id) async {
+    try {
+      final data = await db?.query(
+        'notes',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      return data?.isNotEmpty == true ? data!.first : null;
+    } catch (e) {
+      print('Error fetching note by ID: $e');
+      return null;
+    }
+  }
+
+  static Future<void> updateNote(
+      int id, String title, String description) async {
+    try {
+      await db?.update(
+        'notes',
+        {
+          'title': title,
+          'note': description,
+        },
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      print('Note updated successfully');
+    } catch (e) {
+      print('Error updating note: $e');
+    }
+  }
 }

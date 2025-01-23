@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class NoteItem extends StatelessWidget {
-  const NoteItem({
-    super.key,
-    required this.index,
-    required this.note,
-    required this.isFavorite,
-    required this.onFavoriteToggle,
-  });
-
+  const NoteItem(
+      {super.key,
+      required this.index,
+      required this.note,
+      required this.isFavorite,
+      required this.onFavoriteToggle,
+      required this.onTap});
+  final void Function()? onTap;
   final int index;
   final Map<String, dynamic> note;
   final bool isFavorite; // Change from List<bool> to a single bool
@@ -17,13 +17,13 @@ class NoteItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         width: 250,
         height: 100,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(20),
           color: Colors.grey[300],
           border: Border.all(color: Colors.grey),
         ),

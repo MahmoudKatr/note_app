@@ -3,6 +3,7 @@ import 'package:note_app/add_notes.dart';
 import 'package:note_app/archives_item.dart';
 import 'package:note_app/custom_note_item.dart';
 import 'package:note_app/datatbase_helper.dart';
+import 'package:note_app/edit_note_view.dart';
 import 'package:note_app/favorite_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -209,6 +210,14 @@ class _HomePageState extends State<HomePage> {
                               isFav
                                   ? 1
                                   : 0, // Convert bool to int for the database
+                            );
+                          },
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditNoteView(noteID: notes[index]['id'])),
                             );
                           },
                         ),
