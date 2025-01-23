@@ -86,6 +86,16 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
+              onChanged: (query) async {
+                if (query.isEmpty) {
+                  await fetchNotes();
+                } else {
+                  final searchResults = await DBHelper.searchNotes(query);
+                  setState(() {
+                    notes = searchResults;
+                  });
+                }
+              },
             ),
             const SizedBox(
               height: 40.0,

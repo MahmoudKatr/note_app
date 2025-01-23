@@ -118,4 +118,19 @@ class DBHelper {
       return [];
     }
   }
+
+  static Future<List<Map<String, dynamic>>> searchNotes(String query) async {
+    try {
+      final data = await db?.query(
+        'notes',
+        where: 'title LIKE ?', // Search only in the 'title' column
+        whereArgs: ['%$query%'], // Use the query parameter with wildcards
+      );
+      print('Search results: $data');
+      return data ?? [];
+    } catch (e) {
+      print('Search error: $e');
+      return [];
+    }
+  }
 }
