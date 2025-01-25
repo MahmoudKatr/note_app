@@ -38,8 +38,25 @@ class _FavoriteItemState extends State<FavoriteItem> {
             final note = favoriteNotes[index];
             return Card(
               child: ListTile(
-                title: Text(note['title']),
-                subtitle: Text(note['note']),
+                title: Text(
+                  note['title'],
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
+                subtitle: Text(
+                  note['note'],
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
+                ),
                 trailing: const Icon(Icons.favorite, color: Colors.red),
               ),
             );

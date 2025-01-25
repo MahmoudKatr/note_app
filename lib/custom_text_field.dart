@@ -40,7 +40,11 @@ class CustomTextField extends StatelessWidget {
             decoration: InputDecoration(
               filled: true,
               hintText: hintText,
-              hintStyle: const TextStyle(color: Colors.black),
+              hintStyle: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black // Example for light hint text in dark mode
+                    : Colors.white,
+              ),
               border: buildBorder(borderColor), // Default border
               enabledBorder:
                   buildBorder(borderColor), // Border when not focused

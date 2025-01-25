@@ -41,17 +41,27 @@ class _ArchivesItemViewState extends State<ArchivesItemView> {
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
           },
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
         ),
         title: const Text('Archived Notes'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: archivedNotes.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   'No archived notes available.',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
                 ),
               )
             : ListView.builder(
@@ -64,11 +74,21 @@ class _ArchivesItemViewState extends State<ArchivesItemView> {
                     child: ListTile(
                       title: Text(
                         note['title'] ?? 'No Title',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
-                      subtitle: Text(note['note'] ?? 'No Content'),
+                      subtitle: Text(
+                        note['note'] ?? 'No Content',
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

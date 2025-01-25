@@ -7,7 +7,8 @@ import 'package:note_app/edit_note_view.dart';
 import 'package:note_app/favorite_item.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.onThemeToggle});
+  final VoidCallback? onThemeToggle; // Make it nullable
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -65,6 +66,14 @@ class _HomePageState extends State<HomePage> {
             },
             icon: const Icon(Icons.favorite),
           ),
+          IconButton(
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.wb_sunny
+                  : Icons.nightlight_round,
+            ),
+            onPressed: widget.onThemeToggle,
+          ),
         ],
       ),
       body: Container(
@@ -74,15 +83,25 @@ class _HomePageState extends State<HomePage> {
           children: [
             TextFormField(
               decoration: InputDecoration(
-                fillColor: Colors.grey[300],
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black
+                    : Colors.white,
                 filled: true,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search,
-                  color: Colors.grey,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 hintText: "Search",
+                hintStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white // Example for light hint text in dark mode
+                      : Colors
+                          .black, // Example for dark hint text in light mode
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -240,8 +259,15 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(builder: (context) => const AddNotes()),
             );
           },
-          backgroundColor: Colors.grey[200],
-          child: const Icon(Icons.add),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white // Example for light hint text in dark mode
+              : Colors.black,
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black // Example for light hint text in dark mode
+                : Colors.white,
+          ),
         ),
       ),
     );

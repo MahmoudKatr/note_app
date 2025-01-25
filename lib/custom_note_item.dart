@@ -19,13 +19,17 @@ class NoteItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 250,
-        height: 100,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.grey),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black // Example for light hint text in dark mode
+              : Colors.white,
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white // Example for light hint text in dark mode
+                : Colors.black,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -38,17 +42,26 @@ class NoteItem extends StatelessWidget {
                 children: [
                   Text(
                     note['title'] ?? 'No Title',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors
+                              .white // Example for light hint text in dark mode
+                          : Colors.black,
                     ),
                   ),
-                  Text(
-                    note['note'] ?? 'No Content',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Color.fromARGB(255, 134, 127, 127),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      note['note'] ?? 'No Content',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors
+                                .white // Example for light hint text in dark mode
+                            : Colors.black,
+                      ),
                     ),
                   ),
                 ],
@@ -60,8 +73,10 @@ class NoteItem extends StatelessWidget {
                     ? Icons.favorite
                     : Icons.favorite_border, // Use single bool
                 size: 24,
-                color:
-                    isFavorite ? Colors.red : Colors.grey, // Highlight favorite
+                color: isFavorite
+                    ? Colors.red
+                    : const Color.fromARGB(
+                        255, 98, 86, 86), // Highlight favorite
               ),
               onPressed: () {
                 onFavoriteToggle(!isFavorite); // Toggle favorite

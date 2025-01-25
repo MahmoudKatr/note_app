@@ -35,7 +35,9 @@ class _AddNotesState extends State<AddNotes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade100,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
+            : Colors.white,
         title: const Text(
           "Add Notes",
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -43,12 +45,17 @@ class _AddNotesState extends State<AddNotes> {
         actions: [
           IconButton(
             onPressed: _saveNote,
-            icon: const Icon(Icons.save),
+            icon: Icon(
+              Icons.save,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
+            ),
           )
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,7 +81,12 @@ class _AddNotesState extends State<AddNotes> {
         child: FloatingActionButton(
           onPressed: _saveNote,
           backgroundColor: Colors.grey[200],
-          child: const Icon(Icons.edit),
+          child: Icon(
+            Icons.edit,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black // Example for light hint text in dark mode
+                : Colors.white,
+          ),
         ),
       ),
     );
