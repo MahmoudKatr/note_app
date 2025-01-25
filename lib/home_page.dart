@@ -5,10 +5,11 @@ import 'package:note_app/custom_note_item.dart';
 import 'package:note_app/datatbase_helper.dart';
 import 'package:note_app/edit_note_view.dart';
 import 'package:note_app/favorite_item.dart';
+import 'package:note_app/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, this.onThemeToggle});
-  final VoidCallback? onThemeToggle; // Make it nullable
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -43,6 +44,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -72,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                   ? Icons.wb_sunny
                   : Icons.nightlight_round,
             ),
-            onPressed: widget.onThemeToggle,
+            onPressed: () => themeProvider.toggleTheme(),
           ),
         ],
       ),

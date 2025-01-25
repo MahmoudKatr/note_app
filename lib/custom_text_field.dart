@@ -42,13 +42,12 @@ class CustomTextField extends StatelessWidget {
               hintText: hintText,
               hintStyle: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black // Example for light hint text in dark mode
-                    : Colors.white,
+                    ? Colors.white
+                    : Colors.black,
               ),
-              border: buildBorder(borderColor), // Default border
-              enabledBorder:
-                  buildBorder(borderColor), // Border when not focused
-              focusedBorder: buildBorder(Colors.blue), // Border when focused
+              border: buildBorder(borderColor),
+              enabledBorder: buildBorder(borderColor),
+              focusedBorder: buildBorder(Colors.blue),
             ),
           ),
         ],

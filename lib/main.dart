@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/datatbase_helper.dart';
-import 'themes.dart'; // Import the AppThemes class
-import 'home_page.dart'; // Import the HomePage
+import 'package:provider/provider.dart';
+import 'theme_provider.dart';
+import 'home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DBHelper.createDB();
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(ThemeData.light()), // Default to light theme
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = false;
-
-  void toggleTheme() {
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: _isDarkMode ? AppThemes.darkTheme : AppThemes.lightTheme,
-      home: HomePage(onThemeToggle: toggleTheme),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.themeData,
+          home: const HomePage(),
+        );
+      },
     );
   }
 }
